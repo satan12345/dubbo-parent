@@ -49,6 +49,7 @@ import java.lang.annotation.Target;
  * 扫描 @Service @Reference
  */
 @DubboComponentScan
+
 public @interface EnableDubbo {
 
     /**

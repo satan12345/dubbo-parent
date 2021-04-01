@@ -56,6 +56,9 @@ import static org.apache.dubbo.config.spring.util.BeanFactoryUtils.addApplicatio
  * ServiceFactoryBean
  *
  *ServiceBean 表示某一个服务
+ * serviceBean 实现了ApplicationListener<ContextRefreshedEvent>接口
+ *  即将自己标识为一个监听者
+ *  会在spring容器启动完成之后 调用监听器的 onApplicationEvent 用于导出服务
  * @export
  */
 public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean, DisposableBean,
@@ -112,6 +115,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
             if (logger.isInfoEnabled()) {
                 logger.info("The service ready on spring started. service: " + getInterface());
             }
+            // 导出服务
             export();
         }
     }

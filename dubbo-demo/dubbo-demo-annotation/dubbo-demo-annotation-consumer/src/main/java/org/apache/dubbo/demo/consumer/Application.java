@@ -44,6 +44,7 @@ public class Application {
     @EnableDubbo(scanBasePackages = "org.apache.dubbo.demo.consumer.comp")
     @PropertySource("classpath:/spring/dubbo-consumer.properties")
     @ComponentScan(value = {"org.apache.dubbo.demo.consumer.comp"})
+
     static class ConsumerConfiguration {
 
     }
