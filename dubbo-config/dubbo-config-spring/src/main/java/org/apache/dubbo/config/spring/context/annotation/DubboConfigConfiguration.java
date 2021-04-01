@@ -49,6 +49,7 @@ import org.springframework.context.annotation.Configuration;
 public class DubboConfigConfiguration {
 
     /**
+     * 绑定配置文件的关系
      * Single Dubbo {@link AbstractConfig Config} Bean Binding
      */
     @EnableDubboConfigBindings({

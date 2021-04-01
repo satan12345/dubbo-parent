@@ -157,6 +157,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
 
     /**
      * The reference of the interface implementation
+     * 接口的实现类
      */
     private T ref;
 

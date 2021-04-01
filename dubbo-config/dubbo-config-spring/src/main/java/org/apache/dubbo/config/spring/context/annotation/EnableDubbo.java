@@ -41,7 +41,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
+/**
+ * 处理properties文件 封装成Config
+ */
 @EnableDubboConfig
+/**
+ * 扫描 @Service @Reference
+ */
 @DubboComponentScan
 public @interface EnableDubbo {
 

@@ -34,6 +34,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+/**
+ * 导入组件
+ */
 @Import(DubboConfigBindingsRegistrar.class)
 public @interface EnableDubboConfigBindings {
 

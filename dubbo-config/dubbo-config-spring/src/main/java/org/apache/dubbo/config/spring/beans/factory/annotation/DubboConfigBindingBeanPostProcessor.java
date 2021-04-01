@@ -94,13 +94,17 @@ public class DubboConfigBindingBeanPostProcessor implements BeanPostProcessor, A
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-
+        /**
+         * 每个xxConfig对应一个BeanPostProcessor 所以每个DubboConfigBindingBeanPostProcessor
+         * 只处理对应的beanName
+         *
+         */
         if (this.beanName.equals(beanName) && bean instanceof AbstractConfig) {
 
             AbstractConfig dubboConfig = (AbstractConfig) bean;
-
+            //从properties中获取值 并设置到dubboConfig中
             bind(prefix, dubboConfig);
-
+            //设置dubboConfig对象的那么属性  设置为beanName
             customize(beanName, dubboConfig);
 
         }
@@ -110,7 +114,7 @@ public class DubboConfigBindingBeanPostProcessor implements BeanPostProcessor, A
     }
 
     private void bind(String prefix, AbstractConfig dubboConfig) {
-
+        //赋值
         dubboConfigBinder.bind(prefix, dubboConfig);
 
         if (log.isInfoEnabled()) {
@@ -188,6 +192,7 @@ public class DubboConfigBindingBeanPostProcessor implements BeanPostProcessor, A
                 if (log.isDebugEnabled()) {
                     log.debug("DubboConfigBinder Bean can't be found in ApplicationContext.");
                 }
+                //创建默认的配置绑定器
                 // Use Default implementation
                 dubboConfigBinder = createDubboConfigBinder(applicationContext.getEnvironment());
             }

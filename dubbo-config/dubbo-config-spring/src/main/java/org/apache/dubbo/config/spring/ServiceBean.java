@@ -55,6 +55,7 @@ import static org.apache.dubbo.config.spring.util.BeanFactoryUtils.addApplicatio
 /**
  * ServiceFactoryBean
  *
+ *ServiceBean 表示某一个服务
  * @export
  */
 public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean, DisposableBean,
@@ -335,6 +336,7 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
     public void export() {
         super.export();
         // Publish ServiceBeanExportedEvent
+        //服务导出
         publishExportEvent();
     }
 

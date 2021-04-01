@@ -34,7 +34,11 @@ public class Application {
     }
 
     @Configuration
+
     @EnableDubbo(scanBasePackages = "org.apache.dubbo.demo.provider")
+    /**
+     * 读取配置文件 放到Enviroment
+     */
     @PropertySource("classpath:/spring/dubbo-provider.properties")
     static class ProviderConfiguration {
         @Bean

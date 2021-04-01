@@ -3,14 +3,16 @@ package com.able;
 import org.apache.dubbo.common.URL;
 import org.apache.dubbo.common.extension.ExtensionLoader;
 
+import java.util.ServiceLoader;
+
 
 public class SpiTest {
     public static void main(String[] args) {
         //java 的spi机制
-//        ServiceLoader<Car> cars = ServiceLoader.load(Car.class);
-//        for (Car car : cars) {
-//            System.out.println(car.getCarName(null));
-//        }
+        ServiceLoader<Car> cars = ServiceLoader.load(Car.class);
+        for (Car car : cars) {
+            System.out.println(car.getCarName(null));
+        }
         //dubbo spi扩展机制
         ExtensionLoader<Car> carExtensionLoader = ExtensionLoader.getExtensionLoader(Car.class);
         Car red = carExtensionLoader.getExtension("red");
