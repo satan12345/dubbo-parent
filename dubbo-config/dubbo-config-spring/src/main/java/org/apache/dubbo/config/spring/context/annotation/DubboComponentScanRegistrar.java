@@ -99,7 +99,9 @@ public class DubboComponentScanRegistrar implements ImportBeanDefinitionRegistra
      * @param registry {@link BeanDefinitionRegistry}
      */
     private void registerReferenceAnnotationBeanPostProcessor(BeanDefinitionRegistry registry) {
-
+        /**
+         * spring容器中注册一个ReferenceAnnotationBeanPostProcessor 的bean 他是一个BeanPostProcessor
+         */
         // Register @Reference Annotation Bean Processor
         BeanRegistrar.registerInfrastructureBean(registry,
                 ReferenceAnnotationBeanPostProcessor.BEAN_NAME, ReferenceAnnotationBeanPostProcessor.class);

@@ -214,7 +214,9 @@ public class HeaderExchangeServer implements ExchangeServer {
             int heartbeat = getHeartbeat(url);
             int idleTimeout = getIdleTimeout(url);
             if (currHeartbeat != heartbeat || currIdleTimeout != idleTimeout) {
+                //关闭以前的任务
                 cancelCloseTask();
+                //开启新的任务
                 startIdleCheckTask(url);
             }
         } catch (Throwable t) {

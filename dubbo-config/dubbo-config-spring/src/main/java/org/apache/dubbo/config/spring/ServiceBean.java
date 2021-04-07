@@ -335,12 +335,21 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
 
     /**
      * @since 2.6.5
+     *
+     *  1 读取配置 ---> 获取到当前这个服务最新（优先级最高） 最全的配置
+     *  2 服务注册--->服务相关信息-->注册中心
+     *  3 启动netty/tomcat
+     *  4 服务提供者 监听动态配置
      */
     @Override
     public void export() {
+        //服务导出
         super.export();
         // Publish ServiceBeanExportedEvent
-        //服务导出
+        /**
+         * spring启动完发布ContextRefreshedEvent事件 -->服务导出--> 发布ServiceBeanExportedEvent
+         * 程序员可以通过Spring中的ApplicationListener来监听服务导出是否完成
+         */
         publishExportEvent();
     }
 

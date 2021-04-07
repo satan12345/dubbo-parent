@@ -46,7 +46,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     //TODO SoftReference
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();
-
+    //org.apache.dubbo.demo.DemoService:1.0.1:20880
     protected static String serviceKey(URL url) {
         int port = url.getParameter(Constants.BIND_PORT_KEY, url.getPort());
         return serviceKey(port, url.getPath(), url.getParameter(VERSION_KEY), url.getParameter(GROUP_KEY));

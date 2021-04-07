@@ -280,10 +280,12 @@ public class DubboProtocol extends AbstractProtocol {
 
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+
         URL url = invoker.getUrl();
 
         // export service.
         String key = serviceKey(url);
+        //构造一个DubboExporter 进行服务导出
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
         exporterMap.put(key, exporter);
 
@@ -302,28 +304,32 @@ public class DubboProtocol extends AbstractProtocol {
                 stubServiceMethodsMap.put(url.getServiceKey(), stubServiceMethods);
             }
         }
-
+        //开启nettyServer
         openServer(url);
+        //特殊的一些序列化机制 比如kryo提供了注册机制来注册类 提高序列化与反序列的速度
         optimizeSerialization(url);
 
         return exporter;
     }
 
     private void openServer(URL url) {
-        // find server.
+        // find server. 获得ip地址和port 192.168.70.32:20880
         String key = url.getAddress();
         //client can export a service which's only for server to invoke
         boolean isServer = url.getParameter(IS_SERVER_KEY, true);
         if (isServer) {
+            //缓存中获取server
             ExchangeServer server = serverMap.get(key);
             if (server == null) {
                 synchronized (this) {
                     server = serverMap.get(key);
                     if (server == null) {
+                        //创建 server并放入缓存
                         serverMap.put(key, createServer(url));
                     }
                 }
             } else {
+                //服务冲洗导出时  就会走这里
                 // server supports reset, use together with override
                 server.reset(url);
             }
@@ -338,14 +344,19 @@ public class DubboProtocol extends AbstractProtocol {
                 .addParameterIfAbsent(HEARTBEAT_KEY, String.valueOf(DEFAULT_HEARTBEAT))
                 .addParameter(CODEC_KEY, DubboCodec.NAME)
                 .build();
+        //协议的服务器端实现类型 比如 dubbo协议的 mina netty等 http协议的jetty servlet 等 默认为Netty
         String str = url.getParameter(SERVER_KEY, DEFAULT_REMOTING_SERVER);
 
         if (str != null && str.length() > 0 && !ExtensionLoader.getExtensionLoader(Transporter.class).hasExtension(str)) {
             throw new RpcException("Unsupported server type: " + str + ", url: " + url);
         }
-
+        //通过url绑定端口 和对应的请求处理器
         ExchangeServer server;
         try {
+            /**
+             * requestHandler是请求处理器 类型为 ExchangeHandler
+             * 表示从url的端口接收到请求后 requestHandler来进行处理
+             */
             server = Exchangers.bind(url, requestHandler);
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);

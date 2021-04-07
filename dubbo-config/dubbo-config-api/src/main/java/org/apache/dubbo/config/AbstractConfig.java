@@ -590,7 +590,9 @@ public abstract class AbstractConfig implements Serializable {
     public void refresh() {
         try {
             CompositeConfiguration compositeConfiguration = Environment.getInstance().getConfiguration(getPrefix(), getId());
+            //xxConfig 表示对象本身-AbstractConfig
             Configuration config = new ConfigConfigurationAdapter(this);
+            //优先级
             if (Environment.getInstance().isConfigCenterFirst()) {
                 // The sequence would be: SystemConfiguration -> AppExternalConfiguration -> ExternalConfiguration -> AbstractConfig -> PropertiesConfiguration
                 compositeConfiguration.addConfiguration(4, config);
@@ -600,15 +602,20 @@ public abstract class AbstractConfig implements Serializable {
             }
 
             // loop methods, get override value and set the new value back to method
+            //ServiceBean
             Method[] methods = getClass().getMethods();
             for (Method method : methods) {
+                //是不是set方法
                 if (MethodUtils.isSetter(method)) {
+                    //获取xx配置项的value
                     String value = StringUtils.trim(compositeConfiguration.getString(extractPropertyName(getClass(), method)));
                     // isTypeMatch() is called to avoid duplicate and incorrect update, for example, we have two 'setGeneric' methods in ReferenceConfig.
                     if (StringUtils.isNotEmpty(value) && ClassUtils.isTypeMatch(method.getParameterTypes()[0], value)) {
+                       //设置值
                         method.invoke(this, ClassUtils.convertPrimitive(method.getParameterTypes()[0], value));
                     }
                 } else if (isParametersSetter(method)) {
+                    //是不是setParamter方法
                     String value = StringUtils.trim(compositeConfiguration.getString(extractPropertyName(getClass(), method)));
                     if (StringUtils.isNotEmpty(value)) {
                         Map<String, String> map = invokeGetParameters(getClass(), this);

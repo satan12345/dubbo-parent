@@ -77,7 +77,9 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
     private final static int CACHE_SIZE = Integer.getInteger("", 32);
 
     private final Log logger = LogFactory.getLog(getClass());
-
+    /**
+     * 设置的注解
+     */
     private final Class<? extends Annotation>[] annotationTypes;
 
     private final ConcurrentMap<String, AnnotationInjectedBeanPostProcessor.AnnotatedInjectionMetadata> injectionMetadataCache =
@@ -141,7 +143,7 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
     @Override
     public PropertyValues postProcessPropertyValues(
             PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeanCreationException {
-
+        //寻找要注入的属性 被@Reference标注的Field
         InjectionMetadata metadata = findInjectionMetadata(beanName, bean.getClass(), pvs);
         try {
             metadata.inject(bean, beanName, pvs);
@@ -166,9 +168,10 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
         final List<AnnotationInjectedBeanPostProcessor.AnnotatedFieldElement> elements = new LinkedList<AnnotationInjectedBeanPostProcessor.AnnotatedFieldElement>();
 
         ReflectionUtils.doWithFields(beanClass, field -> {
-
+//            field  属性的类型
+            //获取注解的类型
             for (Class<? extends Annotation> annotationType : getAnnotationTypes()) {
-
+                //遍历获取字段上的注解  拿到  则保存到elements
                 AnnotationAttributes attributes = getMergedAttributes(field, annotationType, getEnvironment(), true);
 
                 if (attributes != null) {
@@ -237,8 +240,11 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
 
 
     private AnnotationInjectedBeanPostProcessor.AnnotatedInjectionMetadata buildAnnotatedMetadata(final Class<?> beanClass) {
+        //哪些field上有@Reference注解
         Collection<AnnotationInjectedBeanPostProcessor.AnnotatedFieldElement> fieldElements = findFieldAnnotationMetadata(beanClass);
+        //哪些方法上有@Refenence注解
         Collection<AnnotationInjectedBeanPostProcessor.AnnotatedMethodElement> methodElements = findAnnotatedMethodMetadata(beanClass);
+        //返回的是dubbo定义的 AnnotatedInjectionMetadata 接下来就会使用这个类去进行属性注入
         return new AnnotationInjectedBeanPostProcessor.AnnotatedInjectionMetadata(beanClass, fieldElements, methodElements);
 
     }
@@ -256,6 +262,7 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
                         metadata.clear(pvs);
                     }
                     try {
+                        //获取属性的元数据 并缓存
                         metadata = buildAnnotatedMetadata(clazz);
                         this.injectionMetadataCache.put(cacheKey, metadata);
                     } catch (NoClassDefFoundError err) {
@@ -351,14 +358,16 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
      */
     protected Object getInjectedObject(AnnotationAttributes attributes, Object bean, String beanName, Class<?> injectedType,
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {
-
+        //构建缓存key ServiceBean:org.apache.dubbo.demo.DemoService#source=private org.apache.dubbo.demo.DemoService org.apache.dubbo.demo.consumer.comp.DemoServiceComponent.demoService#attributes={}
         String cacheKey = buildInjectedObjectCacheKey(attributes, bean, beanName, injectedType, injectedElement);
-
+        //根据key从缓存中获取对象
         Object injectedObject = injectedObjectsCache.get(cacheKey);
 
         if (injectedObject == null) {
+            //生成对象
             injectedObject = doGetInjectedBean(attributes, bean, beanName, injectedType, injectedElement);
             // Customized inject-object if necessary
+            //放入缓存
             injectedObjectsCache.putIfAbsent(cacheKey, injectedObject);
         }
 
@@ -534,13 +543,13 @@ public abstract class AnnotationInjectedBeanPostProcessor extends
 
         @Override
         protected void inject(Object bean, String beanName, PropertyValues pvs) throws Throwable {
-
+            //需要注入的类型
             Class<?> injectedType = field.getType();
-
+            //获取对象 然后进行注入
             Object injectedObject = getInjectedObject(attributes, bean, beanName, injectedType, this);
 
             ReflectionUtils.makeAccessible(field);
-
+            //字段赋值 injectedObject就是值
             field.set(bean, injectedObject);
 
         }

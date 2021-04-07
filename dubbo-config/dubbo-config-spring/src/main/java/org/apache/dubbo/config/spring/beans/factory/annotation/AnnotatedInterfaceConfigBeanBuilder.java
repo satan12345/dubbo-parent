@@ -77,7 +77,7 @@ public abstract class AnnotatedInterfaceConfigBeanBuilder<C extends AbstractInte
         checkDependencies();
 
         C configBean = doBuild();
-
+        //将@Reference注解信息赋值给configBean
         configureBean(configBean);
 
         if (logger.isInfoEnabled()) {
@@ -103,7 +103,7 @@ public abstract class AnnotatedInterfaceConfigBeanBuilder<C extends AbstractInte
     protected void configureBean(C configBean) throws Exception {
 
         preConfigureBean(attributes, configBean);
-
+        //属性赋值
         configureRegistryConfigs(configBean);
 
         configureMonitorConfig(configBean);

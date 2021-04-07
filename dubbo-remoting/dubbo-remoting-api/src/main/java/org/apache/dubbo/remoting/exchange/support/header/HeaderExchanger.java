@@ -41,6 +41,11 @@ public class HeaderExchanger implements Exchanger {
 
     @Override
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+        /**
+         * 下面会去启动netty
+         * 对handler包装了2层 表示当处理一个请求时 每层handler负责不同的处理逻辑
+         * 为什么在connect 和bind时都是DecodeHandler 解码 解的都是InputStream机械成RpcInvocation对象
+         */
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
     }
 
